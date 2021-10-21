@@ -1,4 +1,4 @@
-# Electrum - Lightweight UraniumX Client
+# Electrum - Lightweight Radiocoin Client
 # Copyright (c) 2015 Thomas Voegtlin
 #
 # Permission is hereby granted, free of charge, to any person
@@ -92,7 +92,7 @@ class Contacts(dict, Logger):
                 'type': 'openalias',
                 'validated': validated
             }
-        raise Exception("Invalid UraniumX address or alias", k)
+        raise Exception("Invalid Radiocoin address or alias", k)
 
     def resolve_openalias(self, url):
         # support email-style addresses, per the OA standard

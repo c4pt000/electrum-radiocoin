@@ -1,4 +1,4 @@
-# Electrum - lightweight UraniumX client
+# Electrum - lightweight Radiocoin client
 # Copyright (C) 2011 Thomas Voegtlin
 #
 # Permission is hereby granted, free of charge, to any person
@@ -83,18 +83,18 @@ def all_subclasses(cls) -> Set:
 ca_path = certifi.where()
 
 
-base_units = {'URX':8, 'mURX':5, 'uURX':2, 'geigers':0}
+base_units = {'RADC':8, 'mRADC':5, 'uRADC':2, 'radiowaves':0}
 base_units_inverse = inv_dict(base_units)
-base_units_list = ['URX', 'mURX', 'uURX', 'geigers']  # list(dict) does not guarantee order
+base_units_list = ['RADC', 'mRADC', 'uRADC', 'radiowaves']  # list(dict) does not guarantee order
 
-DECIMAL_POINT_DEFAULT = 5  # mURX
+DECIMAL_POINT_DEFAULT = 5  # mRADC
 
 
 class UnknownBaseUnit(Exception): pass
 
 
 def decimal_point_to_base_unit_name(dp: int) -> str:
-    # e.g. 8 -> "URX"
+    # e.g. 8 -> "RADC"
     try:
         return base_units_inverse[dp]
     except KeyError:
@@ -102,7 +102,7 @@ def decimal_point_to_base_unit_name(dp: int) -> str:
 
 
 def base_unit_name_to_decimal_point(unit_name: str) -> int:
-    # e.g. "URX" -> 8
+    # e.g. "RADC" -> 8
     try:
         return base_units[unit_name]
     except KeyError:
@@ -177,7 +177,7 @@ class FileExportFailed(Exception):
 class WalletFileException(Exception): pass
 
 
-class UraniumXException(Exception): pass
+class RadiocoinException(Exception): pass
 
 
 class UserFacingException(Exception):
@@ -445,7 +445,7 @@ def android_ext_dir():
     return primary_external_storage_path()
 
 def android_backup_dir():
-    d = os.path.join(android_ext_dir(), 'org.electrum.uraniumx')
+    d = os.path.join(android_ext_dir(), 'org.electrum.radiocoin')
     if not os.path.exists(d):
         os.mkdir(d)
     return d
@@ -578,11 +578,11 @@ def user_dir():
     elif 'ANDROID_DATA' in os.environ:
         return android_data_dir()
     elif os.name == 'posix':
-        return os.path.join(os.environ["HOME"], ".electrum-urx")
+        return os.path.join(os.environ["HOME"], ".electrum-radc")
     elif "APPDATA" in os.environ:
-        return os.path.join(os.environ["APPDATA"], "Electrum-urx")
+        return os.path.join(os.environ["APPDATA"], "Electrum-radc")
     elif "LOCALAPPDATA" in os.environ:
-        return os.path.join(os.environ["LOCALAPPDATA"], "Electrum-urx")
+        return os.path.join(os.environ["LOCALAPPDATA"], "Electrum-radc")
     else:
         #raise Exception("No home directory found in environment variables.")
         return
@@ -650,7 +650,7 @@ def chunks(items, size: int):
 def format_satoshis_plain(
         x: Union[int, float, Decimal, str],  # amount in satoshis,
         *,
-        decimal_point: int = 8,  # how much to shift decimal point to left (default: sat->URX)
+        decimal_point: int = 8,  # how much to shift decimal point to left (default: sat->RADC)
 ) -> str:
     """Display a satoshi amount scaled.  Always uses a '.' as a decimal
     point and has no thousands separator"""
@@ -675,7 +675,7 @@ def format_satoshis(
         x: Union[int, float, Decimal, str, None],  # amount in satoshis
         *,
         num_zeros: int = 0,
-        decimal_point: int = 8,  # how much to shift decimal point to left (default: sat->URX)
+        decimal_point: int = 8,  # how much to shift decimal point to left (default: sat->RADC)
         precision: int = 0,  # extra digits after satoshi precision
         is_diff: bool = False,  # if True, enforce a leading sign (+/-)
         whitespaces: bool = False,  # if True, add whitespaces, to align numbers in a column
@@ -714,7 +714,7 @@ def format_satoshis(
     # add leading/trailing whitespaces so that numbers can be aligned in a column
     if whitespaces:
         target_fract_len = overall_precision
-        target_integer_len = 14 - decimal_point  # should be enough for up to unsigned 999999 URX
+        target_integer_len = 14 - decimal_point  # should be enough for up to unsigned 999999 RADC
         if add_thousands_sep:
             target_fract_len += max(0, (target_fract_len - 1) // 3)
             target_integer_len += max(0, (target_integer_len - 1) // 3)
@@ -797,17 +797,11 @@ def time_difference(distance_in_time, include_seconds):
         return "over %d years" % (round(distance_in_minutes / 525600))
 
 mainnet_block_explorers = {
-  'explorer.uraniumx.org': ('https://explorer.uraniumx.org/',
+  'radioblockchain.info': ('http://radioblockchain.info/',
                         {'tx': 'tx/', 'addr': 'address/'}),
 }
 
 testnet_block_explorers = {
-    'Bitaps.com': ('https://tURX.bitaps.com/',
-                       {'tx': '', 'addr': ''}),
-    'BlockCypher.com': ('https://live.blockcypher.com/URX-testnet/',
-                       {'tx': 'tx/', 'addr': 'address/'}),
-    'Blockchain.info': ('https://www.blockchain.com/URX-testnet/',
-                       {'tx': 'tx/', 'addr': 'address/'}),
     'Blockstream.info': ('https://blockstream.info/testnet/',
                         {'tx': 'tx/', 'addr': 'address/'}),
     'mempool.space': ('https://mempool.space/testnet/',
@@ -836,10 +830,10 @@ _block_explorer_default_api_loc = {'tx': 'tx/', 'addr': 'address/'}
 
 def block_explorer_info():
     from . import constants
-    if constants.net.NET_NAME == "testnet":
-        return testnet_block_explorers
-    elif constants.net.NET_NAME == "signet":
-        return signet_block_explorers
+#    if constants.net.NET_NAME == "mainnet":
+ #       return testnet_block_explorers
+  #  elif constants.net.NET_NAME == "signet":
+   #     return signet_block_explorers
     return mainnet_block_explorers
 
 
@@ -849,7 +843,7 @@ def block_explorer(config: 'SimpleConfig') -> Optional[str]:
     """
     if config.get('block_explorer_custom') is not None:
         return None
-    default_ = 'Blockstream.info'
+    default_ = 'radioblockchain.info'
     be_key = config.get('block_explorer', default_)
     be_tuple = block_explorer_info().get(be_key)
     if be_tuple is None:
@@ -892,30 +886,30 @@ def block_explorer_URL(config: 'SimpleConfig', kind: str, item: str) -> Optional
 
 
 # note: when checking against these, use .lower() to support case-insensitivity
-BITCOIN_BIP21_URI_SCHEME = 'uraniumx'
+BITCOIN_BIP21_URI_SCHEME = ''
 LIGHTNING_URI_SCHEME = 'lightning'
 
 
-class InvalidUraniumXURI(Exception): pass
+class InvalidRadiocoinURI(Exception): pass
 
 
 # TODO rename to parse_bip21_uri or similar
 def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
-    """Raises InvalidUraniumXURI on malformed URI."""
+    """Raises InvalidRadiocoinURI on malformed URI."""
     from . import bitcoin
-    from .bitcoin import COIN, TOTAL_COIN_SUPPLY_LIMIT_IN_URX
+    from .bitcoin import COIN, TOTAL_COIN_SUPPLY_LIMIT_IN_RADC
 
     if not isinstance(uri, str):
-        raise InvalidUraniumXURI(f"expected string, not {repr(uri)}")
+        raise InvalidRadiocoinURI(f"expected string, not {repr(uri)}")
 
     if ':' not in uri:
         if not bitcoin.is_address(uri):
-            raise InvalidUraniumXURI("Not a bitcoin address")
+            raise InvalidRadiocoinURI("Not a bitcoin address")
         return {'address': uri}
 
     u = urllib.parse.urlparse(uri)
     if u.scheme.lower() != BITCOIN_BIP21_URI_SCHEME:
-        raise InvalidUraniumXURI("Not a bitcoin URI")
+        raise InvalidRadiocoinURI("Not a bitcoin URI")
     address = u.path
 
     # python for android fails to parse query
@@ -927,12 +921,12 @@ def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
 
     for k, v in pq.items():
         if len(v) != 1:
-            raise InvalidUraniumXURI(f'Duplicate Key: {repr(k)}')
+            raise InvalidRadiocoinURI(f'Duplicate Key: {repr(k)}')
 
     out = {k: v[0] for k, v in pq.items()}
     if address:
         if not bitcoin.is_address(address):
-            raise InvalidUraniumXURI(f"Invalid bitcoin address: {address}")
+            raise InvalidRadiocoinURI(f"Invalid bitcoin address: {address}")
         out['address'] = address
     if 'amount' in out:
         am = out['amount']
@@ -943,11 +937,11 @@ def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
                 amount = Decimal(m.group(1)) * pow(Decimal(10), k)
             else:
                 amount = Decimal(am) * COIN
-            if amount > TOTAL_COIN_SUPPLY_LIMIT_IN_URX * COIN:
-                raise InvalidUraniumXURI(f"amount is out-of-bounds: {amount!r} URX")
+            if amount > TOTAL_COIN_SUPPLY_LIMIT_IN_RADC * COIN:
+                raise InvalidRadiocoinURI(f"amount is out-of-bounds: {amount!r} RADC")
             out['amount'] = int(amount)
         except Exception as e:
-            raise InvalidUraniumXURI(f"failed to parse 'amount' field: {repr(e)}") from e
+            raise InvalidRadiocoinURI(f"failed to parse 'amount' field: {repr(e)}") from e
     if 'message' in out:
         out['message'] = out['message']
         out['memo'] = out['message']
@@ -955,17 +949,17 @@ def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
         try:
             out['time'] = int(out['time'])
         except Exception as e:
-            raise InvalidUraniumXURI(f"failed to parse 'time' field: {repr(e)}") from e
+            raise InvalidRadiocoinURI(f"failed to parse 'time' field: {repr(e)}") from e
     if 'exp' in out:
         try:
             out['exp'] = int(out['exp'])
         except Exception as e:
-            raise InvalidUraniumXURI(f"failed to parse 'exp' field: {repr(e)}") from e
+            raise InvalidRadiocoinURI(f"failed to parse 'exp' field: {repr(e)}") from e
     if 'sig' in out:
         try:
             out['sig'] = bh2u(bitcoin.base_decode(out['sig'], base=58))
         except Exception as e:
-            raise InvalidUraniumXURI(f"failed to parse 'sig' field: {repr(e)}") from e
+            raise InvalidRadiocoinURI(f"failed to parse 'sig' field: {repr(e)}") from e
 
     r = out.get('r')
     sig = out.get('sig')
@@ -1384,7 +1378,7 @@ def is_private_netaddress(host: str) -> bool:
     return False
 
 
-def list_enabled_uURX(x: int) -> Sequence[int]:
+def list_enabled_uRADC(x: int) -> Sequence[int]:
     """e.g. 77 (0b1001101) --> (0, 2, 3, 6)"""
     binary = bin(x)[2:]
     rev_bin = reversed(binary)

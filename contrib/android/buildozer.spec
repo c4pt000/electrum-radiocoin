@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = Electrum-URX
+title = Electrum-RADC
 
 # (str) Package name
-package.name = Uraniumx
+package.name = Radiocoin
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.electrum

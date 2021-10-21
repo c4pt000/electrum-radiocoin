@@ -1,4 +1,4 @@
-# Electrum - lightweight UraniumX client
+# Electrum - lightweight Radiocoin client
 # Copyright (C) 2015 Thomas Voegtlin
 #
 # Permission is hereby granted, free of charge, to any person
@@ -54,7 +54,7 @@ from .crypto import sha256
 from . import util
 from .util import (NotEnoughFunds, UserCancelled, profiler,
                    format_satoshis, format_fee_satoshis, NoDynamicFeeEstimates,
-                   WalletFileException, UraniumXException,
+                   WalletFileException, RadiocoinException,
                    InvalidPassword, format_time, timestamp_to_datetime, Satoshis,
                    Fiat, bfh, bh2u, TxMinedInfo, quantize_feerate, create_bip21_uri, OrderedDictWithIndex, parse_max_spend)
 from .simple_config import SimpleConfig, FEE_RATIO_HIGH_WARNING, FEERATE_WARNING_HIGH_FEE
@@ -1193,7 +1193,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             if fee is not None:
                 size = tx.estimated_size()
                 fee_per_byte = fee / size
-                extra.append(format_fee_satoshis(fee_per_byte) + ' sat/b')
+                extra.append(format_fee_satoshis(fee_per_byte) + ' radiowaves/b')
             if fee is not None and height in (TX_HEIGHT_UNCONF_PARENT, TX_HEIGHT_UNCONFIRMED) \
                and self.config.has_fee_mempool():
                 exp_n = self.config.fee_to_depth(fee_per_byte)
@@ -1557,7 +1557,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             strategies: Sequence[BumpFeeStrategy] = None,
     ) -> PartialTransaction:
         """Increase the miner fee of 'tx'.
-        'new_fee_rate' is the target min rate in sat/vbyte
+        'new_fee_rate' is the target min rate in radiowaves/vbyte
         'coins' is a list of UTXOs we can choose from as potential new inputs to be added
         """
         txid = txid or tx.txid()
@@ -1830,7 +1830,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
     ) -> PartialTransaction:
         """Double-Spend-Cancel: cancel an unconfirmed tx by double-spending
         its inputs, paying ourselves.
-        'new_fee_rate' is the target min rate in sat/vbyte
+        'new_fee_rate' is the target min rate in radiowaves/vbyte
         """
         if not isinstance(tx, PartialTransaction):
             tx = PartialTransaction.from_tx(tx)
@@ -2315,7 +2315,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             addr = req.get_address()
             if sanity_checks:
                 if not bitcoin.is_address(addr):
-                    raise Exception(_('Invalid UraniumX address.'))
+                    raise Exception(_('Invalid Radiocoin address.'))
                 if not self.is_mine(addr):
                     raise Exception(_('Address not in wallet.'))
             key = addr
@@ -2621,7 +2621,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         elif feerate > FEERATE_WARNING_HIGH_FEE / 1000:
             long_warning = (
                     _('Warning') + ': ' + _("The fee for this transaction seems unusually high.")
-                    + f' (feerate: {feerate:.2f} sat/byte)')
+                    + f' (feerate: {feerate:.2f} radiowaves/byte)')
             short_warning = _("high fee rate") + "!"
         if long_warning is None:
             return None
@@ -2741,7 +2741,7 @@ class Imported_Wallet(Simple_Wallet):
         if good_addr and good_addr[0] == address:
             return address
         else:
-            raise UraniumXException(str(bad_addr[0][1]))
+            raise RadiocoinException(str(bad_addr[0][1]))
 
     def delete_address(self, address: str) -> None:
         if not self.db.has_imported_address(address):
@@ -2841,7 +2841,7 @@ class Imported_Wallet(Simple_Wallet):
         if good_addr:
             return good_addr[0]
         else:
-            raise UraniumXException(str(bad_keys[0][1]))
+            raise RadiocoinException(str(bad_keys[0][1]))
 
     def get_txin_type(self, address):
         return self.db.get_imported_address(address).get('type', 'address')

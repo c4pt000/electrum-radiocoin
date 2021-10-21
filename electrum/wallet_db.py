@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Electrum - lightweight UraniumX client
+# Electrum - lightweight Radiocoin client
 # Copyright (C) 2015 Thomas Voegtlin
 #
 # Permission is hereby granted, free of charge, to any person
@@ -765,8 +765,8 @@ class WalletDB(JsonDB):
             return
         PR_TYPE_ONCHAIN = 0
         PR_TYPE_LN = 2
-        from .bitcoin import TOTAL_COIN_SUPPLY_LIMIT_IN_URX, COIN
-        max_sats = TOTAL_COIN_SUPPLY_LIMIT_IN_URX * COIN
+        from .bitcoin import TOTAL_COIN_SUPPLY_LIMIT_IN_RADC, COIN
+        max_sats = TOTAL_COIN_SUPPLY_LIMIT_IN_RADC * COIN
         requests = self.data.get('payment_requests', {})
         invoices = self.data.get('invoices', {})
         for d in [invoices, requests]:

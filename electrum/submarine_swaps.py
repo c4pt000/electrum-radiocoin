@@ -144,9 +144,9 @@ class SwapManager(Logger):
             if swap.is_reverse and swap.prepay_hash is not None:
                 self.prepayments[swap.prepay_hash] = bytes.fromhex(k)
         # api url
-        if constants.net == constants.UraniumXMainnet:
+        if constants.net == constants.RadiocoinMainnet:
             self.api_url = API_URL_MAINNET
-        elif constants.net == constants.UraniumXTestnet:
+        elif constants.net == constants.RadiocoinTestnet:
             self.api_url = API_URL_TESTNET
         else:
             self.api_url = API_URL_REGTEST

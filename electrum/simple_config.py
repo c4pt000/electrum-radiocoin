@@ -21,24 +21,6 @@ from .logging import get_logger, Logger
 
 
 FEE_ETA_TARGETS = [
-520900 * 1,
-520900 * 1,
-520900 * 1,
-520900 * 1,
-]
-FEE_DEPTH_TARGETS = [
-520900 * 1,
-520900 * 1,
-520900 * 1,
-520900 * 1,
-520900 * 1,
-520900 * 1,
-520900 * 1,
-520900 * 1,
-]
-
-'''
-FEE_ETA_TARGETS = [
 520900 * 1000,
 520900 * 1000,
 520900 * 1000,
@@ -54,29 +36,28 @@ FEE_DEPTH_TARGETS = [
 520900 * 1000,
 520900 * 1000,
 ]
-'''
-#1000, 5000000, 2000000, 10, 500000, 200000, 10]
-FEE_LN_ETA_TARGET = 520900 * 1
+#10, 5000000, 2000000, 10, 500000, 200000, 10]
+FEE_LN_ETA_TARGET = 520900 * 1000
 #2  # note: make sure the network is asking for estimates for this target
 
 # satoshi per kbyte
-FEERATE_MAX_DYNAMIC = 520900 * 1
-FEERATE_WARNING_HIGH_FEE = 520900 * 1
-FEERATE_FALLBACK_STATIC_FEE = 520900 * 1
-FEERATE_DEFAULT_RELAY = 520900 * 1
-FEERATE_MAX_RELAY = 520900 * 1
+FEERATE_MAX_DYNAMIC = 520900 * 1000
+FEERATE_WARNING_HIGH_FEE = 520900 * 1000
+FEERATE_FALLBACK_STATIC_FEE = 520900 * 1000
+FEERATE_DEFAULT_RELAY = 520900 * 1000
+FEERATE_MAX_RELAY = 520900 * 1000
 FEERATE_STATIC_VALUES = [
-520900 * 1,
-520900 * 1,
-520900 * 1,
-520900 * 1,
-520900 * 1,
-520900 * 1,
-520900 * 1,
-520900 * 1,
-520900 * 1,
-520900 * 1,
-520900 * 1,
+520900 * 1000,
+520900 * 1000,
+520900 * 1000,
+520900 * 1000,
+520900 * 1000,
+520900 * 1000,
+520900 * 1000,
+520900 * 1000,
+520900 * 1000,
+520900 * 1000,
+520900 * 1000,
 ]
 #1000, 2000, 5000, 10000, 20000, 30000,
 #                         50000, 70000, 10, 150000, 200000, 300000]
@@ -182,7 +163,7 @@ class SimpleConfig(Logger):
             path = os.path.join(path, 'simnet')
             make_dir(path, allow_symlink=False)
 
-        self.logger.info(f"electrum-urx directory {path}")
+        self.logger.info(f"electrum-nmc directory {path}")
         return path
 
     def rename_config_keys(self, config, keypairs, deprecation_warning=False):
@@ -271,7 +252,7 @@ class SimpleConfig(Logger):
         base_unit = self.user_config.get('base_unit')
         if isinstance(base_unit, str):
             self._set_key_in_user_config('base_unit', None)
-            map_ = {'urx':8, 'murx':5, 'uurx':2, 'bits':2, 'geigers':0}
+            map_ = {'nmc':8, 'mnmc':5, 'unmc':2, 'bits':2, 'noise':0}
             decimal_point = map_.get(base_unit.lower())
             self._set_key_in_user_config('decimal_point', decimal_point)
 
@@ -338,7 +319,7 @@ class SimpleConfig(Logger):
         new_path = os.path.join(self.path, "wallets", "default_wallet")
 
         # default path in pre 1.9 versions
-        old_path = os.path.join(self.path, "electrum-urx.dat")
+        old_path = os.path.join(self.path, "electrum-nmc.dat")
         if os.path.exists(old_path) and not os.path.exists(new_path):
             os.rename(old_path, new_path)
 
@@ -429,7 +410,7 @@ class SimpleConfig(Logger):
         fee += 1
         # convert to sat/kbyte
 #        return fee * 1000 000 000
-        return fee * 1
+        return fee * 1000000000
 
     def depth_target(self, slider_pos):
         slider_pos = max(slider_pos, 0)
@@ -480,8 +461,8 @@ class SimpleConfig(Logger):
             rate_str = 'unknown'
         else:
 #            fee_rate = fee_rate/1000
-            fee_rate = 1
-            rate_str = format_fee_satoshis(fee_rate) + ' geigers/byte'
+            fee_rate = 1.000
+            rate_str = format_fee_satoshis(fee_rate) + ' noise/byte'
 
         if dyn:
             if mempool:
@@ -574,8 +555,8 @@ class SimpleConfig(Logger):
 
         fee_level: float between 0.0 and 1.0, representing fee slider position
         """
-#        if constants.net is constants.BitcoinRegtest:
- #           return FEERATE_REGTEST_HARDCODED
+      #  if constants.net is constants.BitcoinRegtest:
+       #     return FEERATE_REGTEST_HARDCODED
         if dyn is None:
             dyn = self.is_dynfee()
         if mempool is None:
@@ -591,8 +572,7 @@ class SimpleConfig(Logger):
             else:
                 fee_rate = self.eta_to_fee(self.get_fee_level())
         else:
-#            fee_rate = self.get('fee_per_kb', FEERATE_FALLBACK_STATIC_FEE)
-            fee_rate = self.get('', FEERATE_FALLBACK_STATIC_FEE)
+            fee_rate = self.get('fee_per_kb', FEERATE_FALLBACK_STATIC_FEE)
         return fee_rate
 
     def fee_per_byte(self):
@@ -681,7 +661,7 @@ class SimpleConfig(Logger):
         return self.format_amount(amount) + ' '+ self.get_base_unit()
 
     def format_fee_rate(self, fee_rate):
-        return format_fee_satoshis(fee_rate/1000, num_zeros=self.num_zeros) + ' geigers/byte'
+        return format_fee_satoshis(fee_rate/1000, num_zeros=self.num_zeros) + ' noise/byte'
 
     def get_base_unit(self):
         return decimal_point_to_base_unit_name(self.decimal_point)
@@ -696,7 +676,7 @@ class SimpleConfig(Logger):
 
 
 def read_user_config(path):
-    """Parse and store the user config settings in electrum-urx.conf into user_config[]."""
+    """Parse and store the user config settings in electrum-nmc.conf into user_config[]."""
     if not path:
         return {}
     config_path = os.path.join(path, "config")

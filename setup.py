@@ -46,7 +46,7 @@ if platform.system() in ['Linux', 'FreeBSD', 'DragonFly']:
         else:
             usr_share = os.path.expanduser('~/.local/share')
     data_files += [
-        (os.path.join(usr_share, 'applications/'), ['electrum-urx.desktop']),
+        (os.path.join(usr_share, 'applications/'), ['electrum.desktop']),
         (os.path.join(usr_share, icons_dirname), ['electrum/gui/icons/electrum.png']),
     ]
 
@@ -65,7 +65,7 @@ extras_require['fast'] = extras_require['crypto']
 
 
 setup(
-    name="Electrum-URX",
+    name="Electrum",
     version=version.ELECTRUM_VERSION,
     python_requires='>={}'.format(MIN_PYTHON_VERSION),
     install_requires=requirements,
@@ -88,10 +88,10 @@ setup(
     include_package_data=True,
     scripts=['electrum/electrum'],
     data_files=data_files,
-    description="Lightweight UraniumX Wallet",
+    description="Lightweight Radiocoin Wallet",
     author="Thomas Voegtlin",
     author_email="thomasv@electrum.org",
     license="MIT Licence",
     url="https://electrum.org",
-    long_description="""Lightweight UraniumX Wallet""",
+    long_description="""Lightweight Radiocoin Wallet""",
 )
