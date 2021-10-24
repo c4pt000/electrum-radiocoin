@@ -2613,16 +2613,19 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
                     + _("Try to raise your transaction fee, or use a server with a lower relay fee."))
             short_warning = _("below relay fee") + "!"
             allow_send = False
+# high fee warning here mod
         elif fee_ratio >= FEE_RATIO_HIGH_WARNING:
             long_warning = (
-                    _('Warning') + ': ' + _("The fee for this transaction seems unusually high.")
-                    + f' ({fee_ratio*100:.2f}% of amount)')
-            short_warning = _("high fee ratio") + "!"
+                    _('') + '' + _("")
+#                    + f' ({fee_ratio*100:.2f}% of amount)')
+                    + f'')
+            short_warning = _("") + ""
         elif feerate > FEERATE_WARNING_HIGH_FEE / 1000:
             long_warning = (
-                    _('Warning') + ': ' + _("The fee for this transaction seems unusually high.")
-                    + f' (feerate: {feerate:.2f} geigers/byte)')
-            short_warning = _("high fee rate") + "!"
+                    _('') + '' + _("")
+#                    + f' (feerate: {feerate:.2f} geigers/byte)')
+                    + f'')
+            short_warning = _("") + ""
         if long_warning is None:
             return None
         else:
