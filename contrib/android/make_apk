@@ -9,13 +9,13 @@ PACKAGES="$PROJECT_ROOT"/packages/
 LOCALE="$PROJECT_ROOT"/electrum/locale/
 
 . "$CONTRIB"/build_tools_util.sh
-#
-#if [ ! -d "$PACKAGES" ]; then
-#  "$CONTRIB"/make_packages || fail "make_packages failed"
-#fi
+
+if [ ! -d "$PACKAGES" ]; then
+  "$CONTRIB"/make_packages || fail "make_packages failed"
+fi
 
 pushd "$PROJECT_ROOT"
-#git submodule update --init
+git submodule update --init
 popd
 
 # update locale
@@ -75,7 +75,7 @@ else
     export APP_ANDROID_ARCH=arm64-v8a
     make apk
     # export APP_ANDROID_ARCH=armeabi-v7a
-    # make apk
+     make apk
 fi
 
 popd
