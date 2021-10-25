@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Electrum - lightweight UraniumX client
+# Electrum - lightweight Radiocoin client
 # Copyright (C) 2011 thomasv@gitorious
 #
 # Permission is hereby granted, free of charge, to any person
@@ -28,7 +28,7 @@ from typing import List, Tuple, TYPE_CHECKING, Optional, Union, Sequence
 import enum
 from enum import IntEnum, Enum
 
-from .util import bfh, bh2u, UraniumXException, assert_bytes, to_bytes, inv_dict, is_hex_str
+from .util import bfh, bh2u, RadiocoinException, assert_bytes, to_bytes, inv_dict, is_hex_str
 from . import version
 from . import segwit_addr
 from . import constants
@@ -43,7 +43,7 @@ if TYPE_CHECKING:
 
 COINBASE_MATURITY = 10
 COIN = 100000000
-TOTAL_COIN_SUPPLY_LIMIT_IN_URX = 235000
+TOTAL_COIN_SUPPLY_LIMIT_IN_RADC = 100000000000
 
 NLOCKTIME_MIN = 0
 NLOCKTIME_BLOCKHEIGHT_MAX = 500_000_000 - 1
@@ -218,7 +218,7 @@ def int_to_hex(i: int, length: int=1) -> str:
     return rev_hex(s)
 
 def script_num_to_hex(i: int) -> str:
-    """See CScriptNum in UraniumX Core.
+    """See CScriptNum in Radiocoin Core.
     Encodes an integer as hex, to be used in script.
 
     ported from https://github.com/bitcoin/bitcoin/blob/8cbc5c4be4be22aca228074f087a374a7ec38be8/src/script/script.h#L326
@@ -457,11 +457,11 @@ def script_to_address(script: str, *, net=None) -> str:
 def address_to_script(addr: str, *, net=None) -> str:
     if net is None: net = constants.net
     if not is_address(addr, net=net):
-        raise UraniumXException(f"invalid bitcoin address: {addr}")
+        raise RadiocoinException(f"invalid bitcoin address: {addr}")
     witver, witprog = segwit_addr.decode_segwit_address(net.SEGWIT_HRP, addr)
     if witprog is not None:
         if not (0 <= witver <= 16):
-            raise UraniumXException(f'impossible witness version: {witver}')
+            raise RadiocoinException(f'impossible witness version: {witver}')
         return construct_script([witver, bytes(witprog)])
     addrtype, hash_160_ = b58_address_to_hash160(addr)
     if addrtype == net.ADDRTYPE_P2PKH:
@@ -469,7 +469,7 @@ def address_to_script(addr: str, *, net=None) -> str:
     elif addrtype == net.ADDRTYPE_P2SH:
         script = construct_script([opcodes.OP_HASH160, hash_160_, opcodes.OP_EQUAL])
     else:
-        raise UraniumXException(f'unknown address type: {addrtype}')
+        raise RadiocoinException(f'unknown address type: {addrtype}')
     return script
 
 
@@ -487,23 +487,23 @@ def address_to_hash(addr: str, *, net=None) -> Tuple[OnchainOutputType, bytes]:
     """Return (type, pubkey hash / witness program) for an address."""
     if net is None: net = constants.net
     if not is_address(addr, net=net):
-        raise UraniumXException(f"invalid bitcoin address: {addr}")
+        raise RadiocoinException(f"invalid bitcoin address: {addr}")
     witver, witprog = segwit_addr.decode_segwit_address(net.SEGWIT_HRP, addr)
     if witprog is not None:
         if witver != 0:
-            raise UraniumXException(f"not implemented handling for witver={witver}")
+            raise RadiocoinException(f"not implemented handling for witver={witver}")
         if len(witprog) == 20:
             return OnchainOutputType.WITVER0_P2WPKH, bytes(witprog)
         elif len(witprog) == 32:
             return OnchainOutputType.WITVER0_P2WSH, bytes(witprog)
         else:
-            raise UraniumXException(f"unexpected length for segwit witver=0 witprog: len={len(witprog)}")
+            raise RadiocoinException(f"unexpected length for segwit witver=0 witprog: len={len(witprog)}")
     addrtype, hash_160_ = b58_address_to_hash160(addr)
     if addrtype == net.ADDRTYPE_P2PKH:
         return OnchainOutputType.P2PKH, hash_160_
     elif addrtype == net.ADDRTYPE_P2SH:
         return OnchainOutputType.P2SH, hash_160_
-    raise UraniumXException(f"unknown address type: {addrtype}")
+    raise RadiocoinException(f"unknown address type: {addrtype}")
 
 
 def address_to_scripthash(addr: str, *, net=None) -> str:
@@ -535,7 +535,7 @@ __b43chars = b'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$*+-./:'
 assert len(__b43chars) == 43
 
 
-class BaseDecodeError(UraniumXException): pass
+class BaseDecodeError(RadiocoinException): pass
 
 
 def base_encode(v: bytes, *, base: int) -> str:
@@ -558,7 +558,7 @@ def base_encode(v: bytes, *, base: int) -> str:
         result.append(chars[mod])
         long_value = div
     result.append(chars[long_value])
-    # UraniumX does a little leading-zero-compression:
+    # Radiocoin does a little leading-zero-compression:
     # leading 0-bytes in the input become leading-1s
     nPad = 0
     for c in v:
@@ -671,7 +671,7 @@ def deserialize_privkey(key: str) -> Tuple[str, bytes, bool]:
     if ':' in key:
         txin_type, key = key.split(sep=':', maxsplit=1)
         if txin_type not in WIF_SCRIPT_TYPES:
-            raise UraniumXException('unknown script type: {}'.format(txin_type))
+            raise RadiocoinException('unknown script type: {}'.format(txin_type))
     try:
         vch = DecodeBase58Check(key)
     except Exception as e:
@@ -684,24 +684,24 @@ def deserialize_privkey(key: str) -> Tuple[str, bytes, bool]:
         try:
             txin_type = WIF_SCRIPT_TYPES_INV[prefix_value]
         except KeyError as e:
-            raise UraniumXException('invalid prefix ({}) for WIF key (1)'.format(vch[0])) from None
+            raise RadiocoinException('invalid prefix ({}) for WIF key (1)'.format(vch[0])) from None
     else:
         # all other keys must have a fixed first byte
         if vch[0] != constants.net.WIF_PREFIX:
-            raise UraniumXException('invalid prefix ({}) for WIF key (2)'.format(vch[0]))
+            raise RadiocoinException('invalid prefix ({}) for WIF key (2)'.format(vch[0]))
 
     if len(vch) not in [33, 34]:
-        raise UraniumXException('invalid vch len for WIF key: {}'.format(len(vch)))
+        raise RadiocoinException('invalid vch len for WIF key: {}'.format(len(vch)))
     compressed = False
     if len(vch) == 34:
         if vch[33] == 0x01:
             compressed = True
         else:
-            raise UraniumXException(f'invalid WIF key. length suggests compressed pubkey, '
+            raise RadiocoinException(f'invalid WIF key. length suggests compressed pubkey, '
                                    f'but last byte is {vch[33]} != 0x01')
 
     if is_segwit_script_type(txin_type) and not compressed:
-        raise UraniumXException('only compressed public keys can be used in segwit scripts')
+        raise RadiocoinException('only compressed public keys can be used in segwit scripts')
 
     secret_bytes = vch[1:33]
     # we accept secrets outside curve range; cast into range here:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Electrum - lightweight UraniumX client
+# Electrum - lightweight Radiocoin client
 # Copyright (C) 2012 thomasv@gitorious
 #
 # Permission is hereby granted, free of charge, to any person
@@ -62,7 +62,7 @@ from electrum.util import (format_time,
                            bh2u, bfh, InvalidPassword,
                            UserFacingException,
                            get_new_wallet_name, send_exception_to_crash_reporter,
-                           InvalidUraniumXURI, maybe_extract_bolt11_invoice, NotEnoughFunds,
+                           InvalidRadiocoinURI, maybe_extract_bolt11_invoice, NotEnoughFunds,
                            NoDynamicFeeEstimates,
                            AddTransactionException, BITCOIN_BIP21_URI_SCHEME,
                            InvoiceError, parse_max_spend)
@@ -560,8 +560,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         if self.wallet.is_watching_only():
             msg = ' '.join([
                 _("This wallet is watching-only."),
-                _("This means you will not be able to spend UraniumXs with it."),
-                _("Make sure you own the seed phrase or the private keys, before you request UraniumXs to be sent to this wallet.")
+                _("This means you will not be able to spend Radiocoins with it."),
+                _("Make sure you own the seed phrase or the private keys, before you request Radiocoins to be sent to this wallet.")
             ])
             self.show_warning(msg, title=_('Watch-only wallet'))
 
@@ -578,7 +578,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         msg = ''.join([
             _("You are in testnet mode."), ' ',
             _("Testnet coins are worthless."), '\n',
-            _("Testnet is separate from the main UraniumX network. It is used for testing.")
+            _("Testnet is separate from the main Radiocoin network. It is used for testing.")
         ])
         cb = QCheckBox(_("Don't show this again."))
         cb_checked = False
@@ -778,33 +778,37 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         help_menu.addSeparator()
         help_menu.addAction(_("&Documentation"), lambda: webopen("http://docs.electrum.org/")).setShortcut(QKeySequence.HelpContents)
         if not constants.net.TESTNET:
-            help_menu.addAction(_("&UraniumX Paper"), self.show_bitcoin_paper)
+            help_menu.addAction(_("&Radiocoin Paper"), self.show_bitcoin_paper)
         help_menu.addAction(_("&Report Bug"), self.show_report_bug)
         help_menu.addSeparator()
         help_menu.addAction(_("&Donate to server"), self.donate_to_server)
 
         self.setMenuBar(menubar)
 
+
     def donate_to_server(self):
         d = self.network.get_donation_address()
         if d:
-            host = self.network.get_parameters().server.host
-          #  self.pay_to_URI('uraniumx:%s?message=donation for %s'%(d, host))
+ #           host = self.network.get_parameters().server.host
+#            self.pay_to_URI('uraniumx:%s?message=donation for %s'%(d, host))
+            self.show_error(_('zelle payment $1.00 or $10.00 usd (whatever you feel like) @ harley0006@gmail.com'))
         else:
-            self.show_error(_('No donation address for this server'))
+            self.show_error(_('zelle payment $1.00 or $10.00 usd (whatever you feel like) @ harley0006@gmail.com'))
+#            self.show_error(_('No donation address for this server'))
+
 
     def show_about(self):
-        QMessageBox.about(self, "Electrum-URX",
+        QMessageBox.about(self, "Electrum-RADC",
                           (_("Version")+" %s" % ELECTRUM_VERSION + "\n\n" +
-                           _("Electrum's focus is speed, with low resource usage and simplifying UraniumX.") + " " +
+                           _("Electrum's focus is speed, with low resource usage and simplifying Radiocoin.") + " " +
                            _("You do not need to perform regular backups, because your wallet can be "
                               "recovered from a secret phrase that you can memorize or write on paper.") + " " +
                            _("Startup times are instant because it operates in conjunction with high-performance "
-                              "servers that handle the most complicated parts of the UraniumX system.") + "\n\n" +
+                              "servers that handle the most complicated parts of the Radiocoin system.") + "\n\n" +
                            _("Uses icons from the Icons8 icon pack (icons8.com).")))
 
     def show_bitcoin_paper(self):
-        filename = os.path.join(self.config.path, 'uraniumx.pdf')
+        filename = os.path.join(self.config.path, 'radiocoin.pdf')
         if not os.path.exists(filename):
             s = self._fetch_tx_from_network("05afa15162271b7b03d950b04df8f6a8429c696d53601e7163df4fc5514564f5")
             if not s:
@@ -1357,9 +1361,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         self.payto_e = PayToEdit(self)
         self.payto_e.addPasteButton(self.app)
         msg = (_("Recipient of the funds.") + "\n\n"
-               + _("You may enter a UraniumX address, a label from your list of contacts "
+               + _("You may enter a Radiocoin address, a label from your list of contacts "
                    "(a list of completions will be proposed), "
-                   "or an alias (email-like address that forwards to a UraniumX address)") + ". "
+                   "or an alias (email-like address that forwards to a Radiocoin address)") + ". "
                + _("Lightning invoices are also supported.") + "\n\n"
                + _("You can also pay to many outputs in a single transaction, "
                    "specifying one output per line.") + "\n" + _("Format: address, amount") + "\n"
@@ -1516,7 +1520,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
 
         for o in outputs:
             if o.scriptpubkey is None:
-                self.show_error(_('UraniumX Address is None'))
+                self.show_error(_('Radiocoin Address is None'))
                 return True
             if o.value is None:
                 self.show_error(_('Invalid Amount'))
@@ -2001,7 +2005,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
     def set_bip21(self, text: str):
         try:
             out = util.parse_URI(text, self.on_pr)
-        except InvalidUraniumXURI as e:
+        except InvalidRadiocoinURI as e:
             self.show_error(_("Error parsing URI") + f":\n{e}")
             return
         self.payto_URI = out
@@ -2662,7 +2666,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         address  = address.text().strip()
         message = message.toPlainText().strip()
         if not bitcoin.is_address(address):
-            self.show_message(_('Invalid UraniumX address.'))
+            self.show_message(_('Invalid Radiocoin address.'))
             return
         if self.wallet.is_watching_only():
             self.show_message(_('This is a watching-only wallet.'))
@@ -2690,7 +2694,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         address  = address.text().strip()
         message = message.toPlainText().strip().encode('utf-8')
         if not bitcoin.is_address(address):
-            self.show_message(_('Invalid UraniumX address.'))
+            self.show_message(_('Invalid Radiocoin address.'))
             return
         try:
             # This can throw on invalid base64
@@ -2958,7 +2962,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, Logger):
         e.setReadOnly(True)
         vbox.addWidget(e)
 
-        defaultname = 'electrum-uraniumx-private-keys.csv'
+        defaultname = 'electrum-radiocoin-private-keys.csv'
         select_msg = _('Select file to export your private keys to')
         hbox, filename_e, csv_button = filename_field(self, self.config, defaultname, select_msg)
         vbox.addLayout(hbox)

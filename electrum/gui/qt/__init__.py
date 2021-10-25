@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Electrum - lightweight UraniumX client
+# Electrum - lightweight Radiocoin client
 # Copyright (C) 2012 thomasv@gitorious
 #
 # Permission is hereby granted, free of charge, to any person
@@ -46,7 +46,7 @@ from electrum.i18n import _, set_language
 from electrum.plugin import run_hook
 from electrum.base_wizard import GoBack
 from electrum.util import (UserCancelled, profiler, send_exception_to_crash_reporter,
-                           WalletFileException, UraniumXException, get_new_wallet_name)
+                           WalletFileException, RadiocoinException, get_new_wallet_name)
 from electrum.wallet import Wallet, Abstract_Wallet
 from electrum.wallet_db import WalletDB
 from electrum.logging import Logger
@@ -315,7 +315,7 @@ class ElectrumGui(Logger):
         if not wallet:
             try:
                 wallet = self._start_wizard_to_select_or_create_wallet(path)
-            except (WalletFileException, UraniumXException) as e:
+            except (WalletFileException, RadiocoinException) as e:
                 self.logger.exception('')
                 custom_message_box(icon=QMessageBox.Warning,
                                    parent=None,

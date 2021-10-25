@@ -14,5 +14,5 @@ nano qrencode-devel qt5-qtbase-devel.x86_64 qt-devel qt4-devel wget google*fonts
 	echo "./run_electrum"
 	echo ""
 	echo "requires port 50002 open for connectivity"
-	echo "for electrum-uraniumx users close electrum-RADC for uraniumx run /opt/electrum-uraniumx/run_electrum for electurm-uraniumx instead"
+	echo "for electrum-radiocoin users close electrum-RADC for radiocoin run /opt/electrum-radiocoin/run_electrum for electurm-radiocoin instead"
 	./run_electrum &
