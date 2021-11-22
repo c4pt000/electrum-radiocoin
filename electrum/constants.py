@@ -88,18 +88,18 @@ class BitcoinMainnet(AbstractNet):
 
     XPRV_HEADERS = {
         'standard':    0x02fac398,  # xprv
-#        'p2wpkh-p2sh': 0x02fac398,  # yprv
-#        'p2wsh-p2sh':  0x02fac398,    # Yprv
-#        'p2wpkh':      0x02fac398,    # zprv
-#        'p2wsh':       0x02fac398,    # Zprv
+       # 'p2wpkh-p2sh': 0x02fac398,  # yprv
+       # 'p2wsh-p2sh':  0x02fac398,    # Yprv
+       # 'p2wpkh':      0x02fac398,    # zprv
+        #'p2wsh':       0x02fac398,    # Zprv
     }
     XPRV_HEADERS_INV = inv_dict(XPRV_HEADERS)
     XPUB_HEADERS = {
         'standard':    0x02facafd,  # xpub
-#        'p2wpkh-p2sh': 0x02facafd,  # ypub
-#        'p2wsh-p2sh':  0x02facafd,  # Ypub
-#        'p2wpkh':      0x02facafd,  # zpub
-#        'p2wsh':       0x02facafd,  # Zpub
+       # 'p2wpkh-p2sh': 0x02facafd,  # ypub
+       # 'p2wsh-p2sh':  0x02facafd,  # Ypub
+      # 'p2wpkh':      0x02facafd,  # zpub
+      #  'p2wsh':       0x02facafd,  # Zpub
     }
     XPUB_HEADERS_INV = inv_dict(XPUB_HEADERS)
 #    BIP44_COIN_TYPE = 1
@@ -108,7 +108,7 @@ class BitcoinMainnet(AbstractNet):
 #   BIP44_COIN_TYPE = 7
 
 # dogecoin
-    BIP44_COIN_TYPE = 1
+    BIP44_COIN_TYPE = 3
     LN_REALM_BYTE = 0
     LN_DNS_SEEDS = [
 'radioblockchain.info',
