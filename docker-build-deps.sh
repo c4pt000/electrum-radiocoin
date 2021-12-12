@@ -13,7 +13,7 @@ cd /home/user/wspace/electrum
 
      apt-get update
      pip install -r contrib/deterministic-build/requirements-hw.txt 
-     apt install libsecp256k1-dev mesa-* qt5-default x11-* libzbar-dev xclip nano xserver-video-intel libsecp256k1-dev -y
+     apt install libsecp256k1-dev mesa-* qt5-default x11-* libzbar-dev xclip nano xserver-video-intel libsecp256k1-dev libgl-dev -y
      pip install PyQt5 opencv-python cython kivy
 '
 
