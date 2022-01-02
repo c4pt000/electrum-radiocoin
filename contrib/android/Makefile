@@ -30,6 +30,10 @@ apk:
 	@make prepare
 	@-cd ../..; echo "y" | buildozer -v android debug
 	@make clean
+ios:
+	@make prepare
+	@-cd ../..; echo "y" | buildozer -v ios debug
+	@make clean
 release:
 	@make prepare
 	@-cd ../..; echo "y" | buildozer -v android release

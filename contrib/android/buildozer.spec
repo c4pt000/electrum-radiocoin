@@ -36,6 +36,7 @@ source.exclude_patterns = Makefile,setup*,
     # not reproducible:
     packages/aiohttp-*.dist-info/*
 
+ios.codesign.allowed = no
 
 # (str) Application versioning (method 1)
 #version = 0.1
