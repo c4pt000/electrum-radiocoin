@@ -10,7 +10,12 @@ tar -xvf electrum-radiocoin.tar.gz
 ```
 
 
-# macOS (requires python3 , xcode command line tools)
+# macOS (requires python3 , xcode command line tools + brew)
+
+# brew 
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
 ```
 cd electrum-radiocoin
 python3 -m pip install --upgrade pip
