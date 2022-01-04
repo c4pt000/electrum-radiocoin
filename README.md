@@ -17,10 +17,15 @@ tar -xvf electrum-radiocoin.tar.gz
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 ```
+
 cd electrum-radiocoin
+
+brew install autoconf automake libtool
+
 python3 -m pip install --upgrade pip
 python3 -m pip install .
 python3 -m pip install PyQt5
+python3 -m pip install cryptography
 cd contrib
 sh build-macos-automake.sh
 sh make_libsecp256k1.sh
