@@ -41,13 +41,11 @@ else
 fi
 
 info "building binary..."
-sudo docker run -it \
-    --name electrum-wine-builder-cont \
-    -v "$PROJECT_ROOT_OR_FRESHCLONE_ROOT":/opt/wine64/drive_c/electrum \
+sudo docker run -it -d \
+    -v /opt/electrum-radiocoin:/opt/wine64/drive_c/electrum \
     --rm \
     --workdir /opt/wine64/drive_c/electrum/contrib/build-wine \
-    electrum-wine-builder-img \
-    ./make_win.sh
+    c4pt/electrum-build-win10-radiocoin \
 
 # make sure resulting binary location is independent of fresh_clone
 if [ ! -z "$ELECBUILD_COMMIT" ] ; then
